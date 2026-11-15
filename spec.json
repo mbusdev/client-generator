@@ -1,0 +1,729 @@
+{
+    "openapi": "3.1.2",
+    "info": {
+        "title": "Maize Bus Backend",
+        "version": ""
+    },
+    "components": {
+        "schemas": {
+            "ProcessedJourney": {
+                "type": "object",
+                "properties": {
+                    "legs": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FormattedLeg"
+                        }
+                    },
+                    "arrivalTime": {
+                        "type": "number"
+                    },
+                    "departureTime": {
+                        "type": "number"
+                    },
+                    "criteria": {
+                        "type": "object",
+                        "properties": {
+                            "arrivalTime": {
+                                "type": "number"
+                            },
+                            "walkingDistance": {
+                                "type": "number"
+                            },
+                            "transferCount": {
+                                "type": "number"
+                            }
+                        },
+                        "required": [
+                            "arrivalTime",
+                            "walkingDistance",
+                            "transferCount"
+                        ],
+                        "additionalProperties": false
+                    }
+                },
+                "required": [
+                    "legs",
+                    "arrivalTime",
+                    "departureTime",
+                    "criteria"
+                ],
+                "additionalProperties": false
+            },
+            "FormattedLeg": {
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/FormattedLegWalk"
+                    },
+                    {
+                        "$ref": "#/components/schemas/FormattedLegBus"
+                    }
+                ]
+            },
+            "FormattedLegWalk": {
+                "type": "object",
+                "properties": {
+                    "origin_id": {
+                        "type": "string"
+                    },
+                    "origin": {
+                        "type": "string"
+                    },
+                    "destination_id": {
+                        "type": "string"
+                    },
+                    "destination": {
+                        "type": "string"
+                    },
+                    "destinationName": {
+                        "type": "string"
+                    },
+                    "startTime": {
+                        "type": "number"
+                    },
+                    "endTime": {
+                        "type": "number"
+                    },
+                    "duration": {
+                        "type": "number"
+                    },
+                    "path_coords": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LatLon"
+                        }
+                    },
+                    "mode": {
+                        "type": "string",
+                        "const": "walk"
+                    }
+                },
+                "required": [
+                    "origin_id",
+                    "origin",
+                    "destination_id",
+                    "destination",
+                    "destinationName",
+                    "startTime",
+                    "endTime",
+                    "duration",
+                    "path_coords",
+                    "mode"
+                ],
+                "additionalProperties": false
+            },
+            "LatLon": {
+                "type": "object",
+                "properties": {
+                    "lat": {
+                        "type": "number"
+                    },
+                    "lon": {
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "lat",
+                    "lon"
+                ],
+                "additionalProperties": false
+            },
+            "FormattedLegBus": {
+                "type": "object",
+                "properties": {
+                    "origin_id": {
+                        "type": "string"
+                    },
+                    "origin": {
+                        "type": "string"
+                    },
+                    "destination_id": {
+                        "type": "string"
+                    },
+                    "destination": {
+                        "type": "string"
+                    },
+                    "destinationName": {
+                        "type": "string"
+                    },
+                    "startTime": {
+                        "type": "number"
+                    },
+                    "endTime": {
+                        "type": "number"
+                    },
+                    "duration": {
+                        "type": "number"
+                    },
+                    "busPathSegments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FormattedLegBusPathRouteSegment"
+                        }
+                    },
+                    "stopCoords": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FormattedLegBusStopCoord"
+                        }
+                    },
+                    "mode": {
+                        "type": "string",
+                        "const": "bus"
+                    },
+                    "stopTimes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StopTime"
+                        }
+                    },
+                    "trip": {
+                        "$ref": "#/components/schemas/Trip"
+                    },
+                    "tripId": {
+                        "type": "string"
+                    },
+                    "rt": {
+                        "type": "string"
+                    },
+                    "vid": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "origin_id",
+                    "origin",
+                    "destination_id",
+                    "destination",
+                    "destinationName",
+                    "startTime",
+                    "endTime",
+                    "duration",
+                    "busPathSegments",
+                    "stopCoords",
+                    "mode",
+                    "stopTimes",
+                    "trip",
+                    "tripId",
+                    "rt",
+                    "vid"
+                ],
+                "additionalProperties": false
+            },
+            "FormattedLegBusPathRouteSegment": {
+                "type": "object",
+                "properties": {
+                    "rt": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "path": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LatLon"
+                        }
+                    }
+                },
+                "required": [
+                    "rt",
+                    "path"
+                ],
+                "additionalProperties": false
+            },
+            "FormattedLegBusStopCoord": {
+                "type": "object",
+                "properties": {
+                    "rt": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "location": {
+                        "$ref": "#/components/schemas/LatLon"
+                    },
+                    "segmentIdx": {
+                        "type": "number"
+                    },
+                    "idxInSegment": {
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "rt",
+                    "location",
+                    "segmentIdx",
+                    "idxInSegment"
+                ],
+                "additionalProperties": false
+            },
+            "StopTime": {
+                "type": "object",
+                "properties": {
+                    "stop": {
+                        "type": "string"
+                    },
+                    "arrivalTime": {
+                        "type": "number"
+                    },
+                    "departureTime": {
+                        "type": "number"
+                    },
+                    "pickUp": {
+                        "type": "boolean"
+                    },
+                    "dropOff": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "stop",
+                    "arrivalTime",
+                    "departureTime",
+                    "pickUp",
+                    "dropOff"
+                ],
+                "additionalProperties": false
+            },
+            "Trip": {
+                "type": "object",
+                "properties": {
+                    "tripId": {
+                        "type": "string"
+                    },
+                    "vid": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "stopTimes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StopTime"
+                        }
+                    }
+                },
+                "required": [
+                    "tripId",
+                    "vid",
+                    "stopTimes"
+                ],
+                "additionalProperties": false
+            },
+            "Token": {
+                "type": "string"
+            },
+            "Reminder": {
+                "type": "object",
+                "properties": {
+                    "stpid": {
+                        "type": "string"
+                    },
+                    "rtid": {
+                        "type": "string"
+                    },
+                    "thresh": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "eta": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "stpid",
+                    "rtid",
+                    "thresh",
+                    "eta"
+                ],
+                "additionalProperties": false
+            },
+            "BusRouteLine": {
+                "type": "object",
+                "properties": {
+                    "routeId": {
+                        "type": "string"
+                    },
+                    "routeDirection": {
+                        "type": "string"
+                    },
+                    "points": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LatLon"
+                        }
+                    },
+                    "stops": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "index": {
+                                    "type": "integer",
+                                    "minimum": -9007199254740991,
+                                    "maximum": 9007199254740991
+                                },
+                                "stop": {
+                                    "$ref": "#/components/schemas/BusStop"
+                                }
+                            },
+                            "required": [
+                                "index",
+                                "stop"
+                            ],
+                            "additionalProperties": false
+                        }
+                    }
+                },
+                "required": [
+                    "routeId",
+                    "routeDirection",
+                    "points",
+                    "stops"
+                ],
+                "additionalProperties": false
+            },
+            "BusStop": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "$ref": "#/components/schemas/LatLon"
+                    },
+                    "routeId": {
+                        "type": "string"
+                    },
+                    "rotation": {
+                        "type": "number"
+                    },
+                    "isRide": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "location",
+                    "routeId",
+                    "rotation",
+                    "isRide"
+                ],
+                "additionalProperties": false
+            },
+            "PlanWalkingResponse": {
+                "type": "object",
+                "properties": {
+                    "path_coords": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LatLon"
+                        },
+                        "description": "Ordered path coordinates from origin to destination."
+                    },
+                    "duration": {
+                        "type": "number",
+                        "description": "Walking duration in seconds, rounded to the nearest whole second."
+                    }
+                },
+                "required": [
+                    "path_coords",
+                    "duration"
+                ],
+                "additionalProperties": false
+            }
+        }
+    },
+    "paths": {
+        "/mbus/api/v3/plan-journey": {
+            "get": {
+                "summary": "",
+                "description": "Plans a journey between origin and destination coordinates.",
+                "parameters": [
+                    {
+                        "name": "originLat",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "originLon",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "destLat",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "destLon",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "walkingPenalty",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "range",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "journeys": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ProcessedJourney"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "journeys"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/mbus/api/v3/setReminder": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "token": {
+                                        "type": "string"
+                                    },
+                                    "stpid": {
+                                        "type": "string"
+                                    },
+                                    "rtid": {
+                                        "type": "string"
+                                    },
+                                    "thresh": {
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "token",
+                                    "stpid",
+                                    "rtid",
+                                    "thresh"
+                                ],
+                                "additionalProperties": false
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "summary": "",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
+        "/mbus/api/v3/activeReminders/{token}": {
+            "get": {
+                "summary": "active reminders",
+                "description": "big long description idk, gets the reminders associated with a **registration token**, which is gotten from fcm or smth",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Token"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "reminders": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Reminder"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "reminders"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v4/all-mbus-routes": {
+            "get": {
+                "summary": "",
+                "description": "get all cached route patterns",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/BusRouteLine"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v4/all-ride-routes": {
+            "get": {
+                "summary": "",
+                "description": "get all cached ride route patterns",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/BusRouteLine"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v4/plan-walking": {
+            "get": {
+                "summary": "Plan a walking path",
+                "description": "Returns a straight-line placeholder with duration estimated in seconds at 5 km/h. walkingPenalty and range are accepted for compatibility with /plan-journey and ignored. Errors return { error: string } with status 400 for invalid query parameters or 500 for unexpected failures.",
+                "parameters": [
+                    {
+                        "name": "originLat",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "originLon",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "destLat",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "destLon",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "walkingPenalty",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "range",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlanWalkingResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
