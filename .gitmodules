@@ -1,0 +1,3 @@
+[submodule "lib/generated"]
+	path = lib/generated
+	url = https://github.com/mbusdev/generated_client.git
